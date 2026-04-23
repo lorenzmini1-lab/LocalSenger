@@ -1,21 +1,20 @@
 let db;
 const request = indexedDB.open("LocalsengerDB", 1);
 
-request.onupgradeneeded = (event) => {
-    db = event.target.result;
+request.onupgradeneeded = (e) => {
+    db = e.target.result;
     if (!db.objectStoreNames.contains("messages")) db.createObjectStore("messages", { keyPath: "id", autoIncrement: true });
     if (!db.objectStoreNames.contains("userProfile")) db.createObjectStore("userProfile", { keyPath: "setting" });
 };
 
-request.onsuccess = (event) => {
-    db = event.target.result;
+request.onsuccess = (e) => {
+    db = e.target.result;
     checkUserProfile();
     loadMessages();
 };
 
 function checkUserProfile() {
-    const transaction = db.transaction(["userProfile"], "readonly");
-    const store = transaction.objectStore("userProfile");
+    const store = db.transaction("userProfile", "readonly").objectStore("userProfile");
     store.get("username").onsuccess = (e) => {
         if (e.target.result) document.getElementById('userName').textContent = e.target.result.value;
         else document.getElementById('loginModal').style.display = 'flex';
@@ -26,97 +25,66 @@ function checkUserProfile() {
 }
 
 document.getElementById('savePseudoBtn').addEventListener('click', () => {
-    const pseudo = document.getElementById('pseudoInput').value;
-    if (pseudo.trim() !== "") {
-        saveSetting("username", pseudo);
-        document.getElementById('userName').textContent = pseudo;
+    const val = document.getElementById('pseudoInput').value;
+    if (val) {
+        saveSetting("username", val);
+        document.getElementById('userName').textContent = val;
         document.getElementById('loginModal').style.display = 'none';
     }
 });
 
-document.getElementById('userAvatar').addEventListener('click', () => document.getElementById('avatarInput').click());
-document.getElementById('avatarInput').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        const base64data = reader.result;
-        document.getElementById('userAvatar').src = base64data;
-        saveSetting("avatar", base64data);
-    };
-    if (file) reader.readAsDataURL(file);
-});
-
 function saveSetting(key, val) {
-    const transaction = db.transaction(["userProfile"], "readwrite");
-    transaction.objectStore("userProfile").put({ setting: key, value: val });
+    db.transaction("userProfile", "readwrite").objectStore("userProfile").put({ setting: key, value: val });
 }
 
-// MESSAGES
-const sendBtn = document.getElementById('sendBtn');
-const messageInput = document.getElementById('messageInput');
+// Envoi de messages
 const chatBox = document.getElementById('chatBox');
+const messageInput = document.getElementById('messageInput');
 
-function appendMessageToUI(text, type, time) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', type);
-    msgDiv.innerHTML = `${text} <span class="message-time">${time}</span>`;
-    chatBox.appendChild(msgDiv);
+function appendToUI(msg) {
+    const div = document.createElement('div');
+    div.className = `message ${msg.type}`;
+    let content = msg.text ? `<p>${msg.text}</p>` : "";
+    if (msg.image) content += `<img src="${msg.image}">`;
+    div.innerHTML = `${content}<span class="message-time">${msg.time}</span>`;
+    chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function sendMessage() {
-    const text = messageInput.value;
-    if (text.trim() === "") return;
+function saveAndSend(text, image = null) {
     const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    const newMessage = { text: text, type: 'sent', time: time };
-    
-    const transaction = db.transaction(["messages"], "readwrite");
-    transaction.objectStore("messages").add(newMessage);
-    transaction.oncomplete = () => {
-        appendMessageToUI(text, 'sent', time);
+    const msg = { text, image, type: 'sent', time };
+    db.transaction("messages", "readwrite").objectStore("messages").add(msg).onsuccess = () => appendToUI(msg);
+}
+
+document.getElementById('sendBtn').addEventListener('click', () => {
+    if (messageInput.value.trim()) {
+        saveAndSend(messageInput.value);
         messageInput.value = "";
-    };
-}
-
-function loadMessages() {
-    chatBox.innerHTML = "";
-    const transaction = db.transaction(["messages"], "readonly");
-    transaction.objectStore("messages").getAll().onsuccess = (e) => {
-        e.target.result.forEach(msg => appendMessageToUI(msg.text, msg.type, msg.time));
-    };
-}
-
-// NOUVEAUTÉ : VIDER L'HISTORIQUE
-document.getElementById('clearBtn').addEventListener('click', () => {
-    if(confirm("Voulez-vous vraiment supprimer tous les messages ?")) {
-        const transaction = db.transaction(["messages"], "readwrite");
-        transaction.objectStore("messages").clear();
-        transaction.oncomplete = () => {
-            chatBox.innerHTML = "";
-        };
     }
 });
 
-// EXPORT ARCHIVE (Adapté pour v1.7)
-document.getElementById('exportBtn').addEventListener('click', () => {
-    const transaction = db.transaction(["messages"], "readonly");
-    transaction.objectStore("messages").getAll().onsuccess = (e) => {
-        const messages = e.target.result;
-        let html = `<html><body style="background:#efeae2;font-family:sans-serif;padding:20px;">
-                    <h2 style="color:#00a884;text-align:center;">Localsenger - Archive de ${document.getElementById('userName').textContent}</h2>
-                    <div style="max-width:600px;margin:auto;display:flex;flex-direction:column;">`;
-        messages.forEach(m => {
-            const side = m.type === 'sent' ? 'align-self:flex-end;background:#d9fdd3;' : 'align-self:flex-start;background:#fff;';
-            html += `<div style="${side}padding:10px;border-radius:8px;margin-bottom:10px;max-width:80%;box-shadow:0 1px 1px rgba(0,0,0,0.1); position:relative;">
-                     ${m.text} <span style="font-size:10px;color:#667;margin-left:10px;">${m.time}</span></div>`;
-        });
-        html += `</div></body></html>`;
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
-        a.download = "Archive_Localsenger.html";
-        a.click();
-    };
+// Gestion des images
+document.getElementById('attachBtn').addEventListener('click', () => document.getElementById('imageInput').click());
+document.getElementById('imageInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => saveAndSend(null, reader.result);
+    reader.readAsDataURL(file);
 });
 
-sendBtn.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+function loadMessages() {
+    chatBox.innerHTML = "";
+    db.transaction("messages", "readonly").objectStore("messages").getAll().onsuccess = (e) => {
+        e.target.result.forEach(m => appendToUI(m));
+    };
+}
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+    if(confirm("Tout effacer ?")) {
+        db.transaction("messages", "readwrite").objectStore("messages").clear().onsuccess = () => chatBox.innerHTML = "";
+    }
+});
+
+messageInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('sendBtn').click(); });
