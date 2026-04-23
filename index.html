@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Localsenger v1.8</title>
+    <title>Localsenger v1.9</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light-theme" id="appBody">
     <div class="app-container">
         <aside class="sidebar">
             <header class="sidebar-header">
@@ -16,6 +16,7 @@
                 </div>
                 <div class="header-brand" id="userName">Chargement...</div>
                 <div class="header-actions">
+                    <button id="themeBtn" title="Changer le thème">🌙</button>
                     <button id="exportBtn" title="Archive visuelle">📂</button>
                     <button id="clearBtn" title="Vider l'historique">🗑️</button>
                 </div>
@@ -29,10 +30,8 @@
                 <div class="contact-item active">
                     <div class="contact-avatar"></div>
                     <div class="contact-info">
-                        <div class="contact-top">
-                            <h4>Mon Journal Local</h4>
-                        </div>
-                        <p>Version 1.8 : Multimédia</p>
+                        <div class="contact-top"><h4>Mon Journal Local</h4></div>
+                        <p>Version 1.9 : Dark Mode</p>
                     </div>
                 </div>
             </div>
@@ -44,7 +43,7 @@
                     <div class="contact-avatar small"></div>
                     <div class="contact-text">
                         <span class="contact-name">Mon Journal Local</span>
-                        <span class="contact-status">en ligne</span>
+                        <span class="contact-status">Paramètres sauvegardés</span>
                     </div>
                 </div>
             </header>
@@ -52,7 +51,7 @@
             <div class="message-container" id="chatBox"></div>
 
             <footer class="chat-footer">
-                <button id="attachBtn" title="Envoyer une image" style="background:none; border:none; cursor:pointer; font-size:1.4rem;">📎</button>
+                <button id="attachBtn" title="Envoyer une image">📎</button>
                 <input type="file" id="imageInput" style="display:none;" accept="image/*">
                 <input type="text" id="messageInput" placeholder="Tapez un message">
                 <button id="sendBtn">Envoyer</button>
