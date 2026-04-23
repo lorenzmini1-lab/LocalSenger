@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Localsenger v1.10</title>
+    <title>Localsenger v1.17 - Intégral</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="light-theme" id="appBody">
@@ -11,54 +11,55 @@
         <aside class="sidebar">
             <header class="sidebar-header">
                 <div class="profile-img-container">
-                    <img src="https://via.placeholder.com/40" id="userAvatar" class="profile-img" alt="Profil">
+                    <img src="https://via.placeholder.com/40" id="userAvatar" class="profile-img" title="Changer d'avatar">
                     <input type="file" id="avatarInput" style="display:none;" accept="image/*">
                 </div>
                 <div class="header-brand" id="userName">Chargement...</div>
                 <div class="header-actions">
-                    <button id="themeBtn" title="Mode sombre/clair">🌙</button>
-                    <button id="exportBtn" title="Archive visuelle">📂</button>
-                    <button id="clearBtn" title="Vider l'historique">🗑️</button>
+                    <button id="addChatBtn" title="Nouvel espace">➕</button>
+                    <button id="settingsBtn" title="Personnalisation">⚙️</button>
+                    <button id="lockBtn" title="Verrouiller">🔒</button>
+                    <button id="themeBtn">🌙</button>
+                    <button id="exportBtn" title="Exporter HTML">📂</button>
+                    <button id="clearBtn" title="Vider l'espace">🗑️</button>
                 </div>
             </header>
-            
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Rechercher dans les messages...">
+                <input type="text" id="searchInput" placeholder="Rechercher un message...">
             </div>
-
-            <div class="contacts-list">
-                <div class="contact-item active">
-                    <div class="contact-avatar"></div>
-                    <div class="contact-info">
-                        <div class="contact-top"><h4>Journal Local</h4></div>
-                        <p id="lastMsgPreview">Prêt pour la recherche...</p>
-                    </div>
-                </div>
-            </div>
+            <div class="contacts-list" id="contactsList"></div>
         </aside>
 
-        <main class="chat-window">
+        <main class="chat-window" id="chatWindow">
             <header class="chat-header">
                 <div class="contact-details">
-                    <div class="contact-avatar small"></div>
+                    <div class="contact-avatar small" id="currentChatAvatar">📓</div>
                     <div class="contact-text">
-                        <span class="contact-name">Journal Local</span>
-                        <span class="contact-status">v1.10 - Final</span>
+                        <span class="contact-name" id="currentChatName">Journal Global</span>
+                        <span id="statusInfo" class="contact-status">En ligne</span>
                     </div>
                 </div>
             </header>
 
             <div class="message-container" id="chatBox"></div>
 
+            <div id="replyPreview" class="reply-preview">
+                <div class="reply-content"><span id="replyText"></span></div>
+                <button id="cancelReplyBtn">✕</button>
+            </div>
+
             <footer class="chat-footer">
-                <button id="emojiBtn" title="Emojis">😊</button>
-                <button id="attachBtn" title="Image">📎</button>
+                <button id="emojiBtn">😊</button>
+                <button id="attachBtn">📎</button>
                 <input type="file" id="imageInput" style="display:none;" accept="image/*">
-                <input type="text" id="messageInput" placeholder="Tapez un message">
+                <input type="text" id="messageInput" placeholder="Tapez un message...">
+                <button id="voiceBtn">🎤</button>
                 <button id="sendBtn">Envoyer</button>
             </footer>
+
             <div id="emojiPicker" class="emoji-picker">
                 <span>😀</span><span>😂</span><span>😍</span><span>👍</span><span>🔥</span><span>✨</span><span>🎉</span><span>🚀</span><span>🙌</span><span>💡</span>
+                <span>❤️</span><span>💔</span><span>🤔</span><span>😎</span><span>👏</span>
             </div>
         </main>
     </div>
@@ -69,6 +70,32 @@
             <input type="text" id="pseudoInput" placeholder="Ton pseudo...">
             <button id="savePseudoBtn">Commencer</button>
         </div>
+    </div>
+
+    <div id="pinModal" class="modal" style="z-index: 2000;">
+        <div class="modal-content">
+            <h3>Code PIN requis</h3>
+            <input type="password" id="pinInput" maxlength="4" placeholder="••••">
+            <button id="unlockBtn">Déverrouiller</button>
+            <p id="pinError" style="color:red; margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>Personnalisation</h3>
+            <label>Couleur d'accent :</label><br>
+            <input type="color" id="accentColorPicker" value="#00a884"><br><br>
+            <label>Lien fond d'écran (URL) :</label><br>
+            <input type="text" id="wallpaperInput" placeholder="https://..."><br><br>
+            <button id="saveSettingsBtn">Appliquer</button>
+            <button id="closeSettingsBtn" class="secondary">Fermer</button>
+        </div>
+    </div>
+
+    <div id="reactionMenu" class="reaction-menu">
+        <span data-emoji="❤️">❤️</span><span data-emoji="👍">👍</span><span data-emoji="😂">😂</span>
+        <span data-emoji="😮">😮</span><span data-emoji="😢">😢</span><span data-emoji="🔥">🔥</span>
     </div>
 
     <script src="script.js"></script>
