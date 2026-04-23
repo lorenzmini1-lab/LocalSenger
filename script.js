@@ -13,22 +13,18 @@ request.onsuccess = (event) => {
     loadMessages();
 };
 
-// Gestion du Profil
 function checkUserProfile() {
     const transaction = db.transaction(["userProfile"], "readonly");
     const store = transaction.objectStore("userProfile");
-    
     store.get("username").onsuccess = (e) => {
         if (e.target.result) document.getElementById('userName').textContent = e.target.result.value;
         else document.getElementById('loginModal').style.display = 'flex';
     };
-
     store.get("avatar").onsuccess = (e) => {
         if (e.target.result) document.getElementById('userAvatar').src = e.target.result.value;
     };
 }
 
-// Changer le pseudo
 document.getElementById('savePseudoBtn').addEventListener('click', () => {
     const pseudo = document.getElementById('pseudoInput').value;
     if (pseudo.trim() !== "") {
@@ -38,7 +34,6 @@ document.getElementById('savePseudoBtn').addEventListener('click', () => {
     }
 });
 
-// Changer l'avatar
 document.getElementById('userAvatar').addEventListener('click', () => document.getElementById('avatarInput').click());
 document.getElementById('avatarInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -56,7 +51,7 @@ function saveSetting(key, val) {
     transaction.objectStore("userProfile").put({ setting: key, value: val });
 }
 
-// Messages
+// MESSAGES
 const sendBtn = document.getElementById('sendBtn');
 const messageInput = document.getElementById('messageInput');
 const chatBox = document.getElementById('chatBox');
@@ -84,13 +79,25 @@ function sendMessage() {
 }
 
 function loadMessages() {
+    chatBox.innerHTML = "";
     const transaction = db.transaction(["messages"], "readonly");
     transaction.objectStore("messages").getAll().onsuccess = (e) => {
         e.target.result.forEach(msg => appendMessageToUI(msg.text, msg.type, msg.time));
     };
 }
 
-// Export Archive
+// NOUVEAUTÉ : VIDER L'HISTORIQUE
+document.getElementById('clearBtn').addEventListener('click', () => {
+    if(confirm("Voulez-vous vraiment supprimer tous les messages ?")) {
+        const transaction = db.transaction(["messages"], "readwrite");
+        transaction.objectStore("messages").clear();
+        transaction.oncomplete = () => {
+            chatBox.innerHTML = "";
+        };
+    }
+});
+
+// EXPORT ARCHIVE (Adapté pour v1.7)
 document.getElementById('exportBtn').addEventListener('click', () => {
     const transaction = db.transaction(["messages"], "readonly");
     transaction.objectStore("messages").getAll().onsuccess = (e) => {
@@ -99,8 +106,8 @@ document.getElementById('exportBtn').addEventListener('click', () => {
                     <h2 style="color:#00a884;text-align:center;">Localsenger - Archive de ${document.getElementById('userName').textContent}</h2>
                     <div style="max-width:600px;margin:auto;display:flex;flex-direction:column;">`;
         messages.forEach(m => {
-            const style = m.type === 'sent' ? 'align-self:flex-end;background:#d9fdd3;' : 'align-self:flex-start;background:#fff;';
-            html += `<div style="${style}padding:10px;border-radius:8px;margin-bottom:10px;max-width:80%;box-shadow:0 1px 1px rgba(0,0,0,0.1);">
+            const side = m.type === 'sent' ? 'align-self:flex-end;background:#d9fdd3;' : 'align-self:flex-start;background:#fff;';
+            html += `<div style="${side}padding:10px;border-radius:8px;margin-bottom:10px;max-width:80%;box-shadow:0 1px 1px rgba(0,0,0,0.1); position:relative;">
                      ${m.text} <span style="font-size:10px;color:#667;margin-left:10px;">${m.time}</span></div>`;
         });
         html += `</div></body></html>`;
