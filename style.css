@@ -1,45 +1,60 @@
 :root {
-    --wa-bg: #efeae2;
-    --wa-header: #f0f2f5;
+    /* Thème Clair */
+    --bg-main: #ffffff;
+    --bg-chat: #efeae2;
+    --bg-header: #f0f2f5;
+    --bg-sidebar: #ffffff;
+    --text-main: #111b21;
+    --text-sec: #667781;
     --wa-green: #00a884;
-    --wa-sent: #d9fdd3;
-    --wa-received: #ffffff;
-    --wa-sidebar-active: #f5f6f6;
-    --wa-text-main: #111b21;
+    --msg-sent: #d9fdd3;
+    --msg-received: #ffffff;
+    --border: #d1d7db;
+}
+
+body.dark-theme {
+    /* Thème Sombre */
+    --bg-main: #0b141a;
+    --bg-chat: #0b141a;
+    --bg-header: #202c33;
+    --bg-sidebar: #111b21;
+    --text-main: #e9edef;
+    --text-sec: #8696a0;
+    --msg-sent: #005c4b;
+    --msg-received: #202c33;
+    --border: #222d34;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
-body { background-color: #111b21; height: 100vh; display: flex; overflow: hidden; }
-.app-container { width: 100%; height: 100%; display: flex; background: #fff; }
+body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; transition: 0.3s; }
+.app-container { width: 100%; height: 100%; display: flex; background: var(--bg-main); }
 
-.sidebar { width: 400px; border-right: 1px solid #d1d7db; display: flex; flex-direction: column; }
-.sidebar-header { height: 60px; background: var(--wa-header); display: flex; align-items: center; padding: 0 16px; justify-content: space-between; }
+.sidebar { width: 400px; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg-sidebar); }
+.sidebar-header { height: 60px; background: var(--bg-header); display: flex; align-items: center; padding: 0 16px; justify-content: space-between; }
 .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; }
 .header-brand { font-weight: bold; color: var(--wa-green); margin-left: 10px; flex: 1; }
-.header-actions button { background:none; border:none; cursor:pointer; font-size: 1.1rem; margin-left: 5px; }
+.header-actions button { background:none; border:none; cursor:pointer; font-size: 1.1rem; margin-left: 8px; color: var(--text-sec); }
 
-.search-bar { padding: 10px; border-bottom: 1px solid #f0f2f5; }
-.search-bar input { width: 100%; padding: 8px; border-radius: 8px; background: #f0f2f5; border: none; outline: none; }
+.search-bar { padding: 10px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); }
+.search-bar input { width: 100%; padding: 8px; border-radius: 8px; background: var(--bg-header); border: none; outline: none; color: var(--text-main); }
 
-.contact-item { display: flex; padding: 12px; border-bottom: 1px solid #f0f2f5; background: var(--wa-sidebar-active); }
+.contact-item { display: flex; padding: 12px; border-bottom: 1px solid var(--border); background: var(--bg-header); }
 .contact-avatar { width: 45px; height: 45px; background: #dfe5e7; border-radius: 50%; margin-right: 10px; }
 
-.chat-window { flex: 1; display: flex; flex-direction: column; background: var(--wa-bg); position: relative; }
-.chat-window::before { content: ""; position: absolute; width: 100%; height: 100%; opacity: 0.06; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
+.chat-window { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; }
+body.light-theme .chat-window::before { content: ""; position: absolute; width: 100%; height: 100%; opacity: 0.06; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
 
 .message-container { flex: 1; padding: 20px 7%; overflow-y: auto; display: flex; flex-direction: column; z-index: 5; }
-.message { max-width: 65%; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 14px; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-.sent { align-self: flex-end; background: var(--wa-sent); border-top-right-radius: 0; }
-.received { align-self: flex-start; background: var(--wa-received); border-top-left-radius: 0; }
-
-/* Style pour les images envoyées */
+.message { max-width: 65%; padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 14px; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.2); color: var(--text-main); }
+.sent { align-self: flex-end; background: var(--msg-sent); border-top-right-radius: 0; }
+.received { align-self: flex-start; background: var(--msg-received); border-top-left-radius: 0; }
 .message img { max-width: 100%; border-radius: 5px; display: block; margin-bottom: 5px; }
+.message-time { font-size: 10px; color: var(--text-sec); float: right; margin-top: 5px; margin-left: 10px; }
 
-.message-time { font-size: 10px; color: #667; float: right; margin-top: 5px; margin-left: 10px; }
-
-.chat-footer { height: 62px; background: var(--wa-header); display: flex; align-items: center; padding: 0 15px; z-index: 10; }
-.chat-footer input[type="text"] { flex: 1; padding: 10px; border-radius: 8px; border: none; outline: none; margin: 0 10px; }
-#sendBtn { background: var(--wa-green); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+.chat-footer { height: 62px; background: var(--bg-header); display: flex; align-items: center; padding: 0 15px; z-index: 10; }
+.chat-footer input[type="text"] { flex: 1; padding: 10px; border-radius: 8px; background: var(--bg-sidebar); border: none; outline: none; margin: 0 10px; color: var(--text-main); }
+#sendBtn, #attachBtn { background: none; border: none; cursor: pointer; color: var(--text-sec); font-size: 1.2rem; }
+#sendBtn { color: var(--wa-green); font-weight: bold; }
 
 .modal { display:none; position:fixed; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
-.modal-content { background: white; padding: 30px; border-radius: 10px; text-align: center; }
+.modal-content { background: var(--bg-header); padding: 30px; border-radius: 10px; text-align: center; color: var(--text-main); }
