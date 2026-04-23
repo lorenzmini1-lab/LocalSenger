@@ -150,9 +150,14 @@ document.getElementById('voiceBtn').onclick = async () => {
 // --- PIN & LOCK ---
 function checkPinStatus() {
     db.transaction("userProfile", "readonly").objectStore("userProfile").get("pin").onsuccess = (e) => {
-        if (e.target.result) { userPin = e.target.result.value; lockApp(); }
+        // On ne verrouille QUE si un PIN a été trouvé dans la base de données
+        if (e.target.result && e.target.result.value) { 
+            userPin = e.target.result.value; 
+            lockApp(); 
+        }
     };
 }
+
 
 function lockApp() { isLocked = true; document.querySelector('.app-container').classList.add('locked-blur'); document.getElementById('pinModal').style.display = 'flex'; }
 
