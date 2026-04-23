@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Localsenger v1.6</title>
+    <title>Localsenger v1.7</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,19 +15,27 @@
                     <input type="file" id="avatarInput" style="display:none;" accept="image/*">
                 </div>
                 <div class="header-brand" id="userName">Chargement...</div>
-                <button id="exportBtn" title="Archive visuelle">📂</button>
+                <div class="header-actions">
+                    <button id="exportBtn" title="Archive visuelle">📂</button>
+                    <button id="clearBtn" title="Vider l'historique" style="background:none; border:none; cursor:pointer; font-size:1.1rem; margin-left:10px;">🗑️</button>
+                </div>
             </header>
             
             <div class="search-bar">
-                <input type="text" placeholder="Rechercher une discussion">
+                <div class="search-input-wrapper">
+                    <input type="text" placeholder="Rechercher une discussion">
+                </div>
             </div>
 
             <div class="contacts-list">
                 <div class="contact-item active">
                     <div class="contact-avatar"></div>
                     <div class="contact-info">
-                        <h4>Moi (Local)</h4>
-                        <p>Sauvegarde active</p>
+                        <div class="contact-top">
+                            <h4>Mon Journal Local</h4>
+                            <span class="contact-time-meta">10:40</span>
+                        </div>
+                        <p>Sauvegarde v1.7 active...</p>
                     </div>
                 </div>
             </div>
@@ -38,13 +46,14 @@
                 <div class="contact-details">
                     <div class="contact-avatar small"></div>
                     <div class="contact-text">
-                        <span class="contact-name">Journal Local</span>
-                        <span class="contact-status">v1.6 - Prêt pour GitHub</span>
+                        <span class="contact-name">Mon Journal Local</span>
+                        <span class="contact-status">v1.7 - Design avancé</span>
                     </div>
                 </div>
             </header>
 
-            <div class="message-container" id="chatBox"></div>
+            <div class="message-container" id="chatBox">
+                </div>
 
             <footer class="chat-footer">
                 <input type="text" id="messageInput" placeholder="Tapez un message">
@@ -56,9 +65,9 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <h3>Bienvenue sur Localsenger</h3>
-            <p>Choisis un pseudo :</p>
-            <input type="text" id="pseudoInput">
-            <button id="savePseudoBtn">Commencer</button>
+            <p>Choisis ton identifiant local :</p>
+            <input type="text" id="pseudoInput" placeholder="Ton pseudo...">
+            <button id="savePseudoBtn">Créer mon profil</button>
         </div>
     </div>
 
